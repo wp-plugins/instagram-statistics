@@ -1,7 +1,7 @@
 <?php
 	if ($instance['db_id']) {
 		if ($details && $details->token && $details->token !== '' && $details->error_detected !== 1) {
-			?>
+			?>							
 				<p>
 					To configure this widget click on the <b>Configure Widget</b> button.
 				</p>
@@ -473,7 +473,7 @@
 				window._fetchProfile<?php print $instance['db_id'] ?>();
 			}
 			
-			function _fetchProfile<?php print $instance['db_id'] ?>() {
+			function _fetchProfile<?php print $instance['db_id'] ?>() {				
 				var token = '<?php print $details->token ?>';
 				var userid = '<?php print $details->user_id ?>';
 				
@@ -746,7 +746,7 @@
 		      //our dropdown search
 		      jQuery('#otherUser').keyup(function(event) {
 		        setTimeout(function() {
-		          searchUserHandler();
+		          searchUserHandler<?php print $instance['db_id'] ?>();
 		        }, 200);
 		      });
 		      jQuery('#otherUser').blur(function(event) {
@@ -907,8 +907,8 @@
 		        }, 100);
 		      }
 		    
-		      if (!window.searchUserHandler) {
-		        window.searchUserHandler = function() {
+		      if (!window.searchUserHandler<?php print $instance['db_id'] ?>) {				
+		        window.searchUserHandler<?php print $instance['db_id'] ?> = function() {
 		          var keywords = jQuery('#otherUser').val();
 		                 
 		          if (keywords.length > 2) {
