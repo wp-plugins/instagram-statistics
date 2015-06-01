@@ -442,7 +442,7 @@ li.tabber.error a {
 	left: 0px;
 	top: 0px;
 	bottom: 0px;
-	height: 410px;
+	height: 365px;
 	transition: width 0.4s ease;
 	z-index: 2;
 	border: 1px solid #DDD;
@@ -454,7 +454,7 @@ li.tabber.error a {
 	left: 0px;
 	top: 0px;
 	bottom: 0px;
-	height: 410px;
+	height: 380px;
 }
 
 .instagram_stats_setup_img:hover {
@@ -495,7 +495,7 @@ li.tabber.error a {
 	left: 48%;
 	right: 0px;
 	top: 0px;
-	height: 410px;
+	height: 380px;
 }
 
 .instagram_stats_setup_text p:first-of-type {
