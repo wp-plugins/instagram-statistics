@@ -65,6 +65,39 @@
 					<input type="hidden" name="statistics"  value="">			
 				</div>
 				
+				<?php
+					$customTitle = 'Instagram Statistics Widget';						
+					
+					if ($details->username !== '' && $details->username) {
+						$customTitle = '@' . $details->username . ': ';
+						if ($details->shows === 'counters') {
+							$customTitle .= 'Standard counters';
+						} else if ($details->shows === 'posthistory') {
+							$customTitle .= 'Post history';
+						} else if ($details->shows === 'interaction') {
+							$customTitle .= 'Interaction stats';
+						} else if ($details->shows === 'yearlydistribution') {
+							$customTitle .= 'Yearly distribution';
+						} else if ($details->shows === 'yearlydots') {
+							$customTitle .= 'Posts per year';
+						} else if ($details->shows === 'geolocation') {
+							$customTitle .= 'Geolocation stats';
+						} else if ($details->shows === 'tagged') {
+							$customTitle .= 'Tag stats';
+						} else if ($details->shows === 'likesreceived') {
+							$customTitle .= 'Likes distribution';
+						} else if ($details->shows === 'commentsreceived') {
+							$customTitle .= 'Comments distribution';
+						} else if ($details->shows === 'filterusage') {
+							$customTitle .= 'Filter usage';
+						} else if ($details->shows === 'filterinteraction') {
+							$customTItle .= 'Filter interaction';	
+						} else {
+							$customTitle .= 'Instagram Stats';
+						}
+					}	
+				?>
+				
 				<div id="statsSetupForm<?php print $instance['db_id'] ?>" style="display: none;">
 					<?php require('formHeader.php'); ?>
 					<div class="widget-content instagram-stats-widget-admin-form" id="formStats<?php print $instance['db_id'] ?>">
@@ -365,6 +398,15 @@
 		}
 		?>		
 		 <script>
+			function customiseStatsTitle<?php print $instance['db_id'] ?>(title) {
+		      try {
+		        var elem  = jQuery('#statsSetupButton<?php print $instance['db_id'] ?>');
+		        elem.parent().parent().parent().parent().find('h4').html(title);
+		      } catch(e) {
+		        
+		      }
+		    }
+		 		 
 		    function saveStatsPlugin<?php print $instance['db_id'] ?>(close) {            
 		      if (copyStatsFields<?php print $instance['db_id'] ?>()) {
 		        jQuery('#statsSetupButton<?php print $instance['db_id'] ?>').parent().parent().find('input[type=submit]').click();
@@ -910,7 +952,10 @@
 		          jQuery('#otherUserResults').html('<div class="noResults">Nobody found</div>');
 		          jQuery('#otherUserResults').addClass('visible');                         
 		        }
-		      }        
+		      }  
+			  
+			  //customise with our title
+      		  customiseStatsTitle<?php print $instance['db_id'] ?>('<?php print $customTitle ?>');           
 		    });
   		</script>
   <?php
