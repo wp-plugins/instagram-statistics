@@ -9,7 +9,9 @@ Show off your Instagram statistics on your website. Powered by INK361, the world
 
 == Description ==
 
-A comprehensive statistics widget that allows you to display the following metrics:
+This Instagram Statistics Widget is perfect for displaying comprehensive metrics for your Instagram account on your Wordpress powered website or blog.
+
+You can customise the widget to display the following metrics in any widget areas:
 
 * Number of photos/videos
 * Number of likes
@@ -28,7 +30,7 @@ A comprehensive statistics widget that allows you to display the following metri
 * Instagram Filter usage
 * Instagram Filter interaction
 
-To get started, drag and drop the Instagram Statistics Widget into one of your widget areas and then click on the Connect To Instagram button.
+To get started, download and activate our widget from this page or within the Wordpress plugin interface. Drag and drop the Instagram Statistics Widget into one of your widget areas and then click on the Connect To Instagram button.
 
 You can find your widget management area under your Appearance menu.
 
