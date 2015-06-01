@@ -3,7 +3,7 @@
 	Plugin Name: Instagram Statistics
 	Plugin URI: http://wordpress.ord/extend/plugins/instagram-statistics
 	Description: Comprehensive Instagram statistics widget with tonnes of options
-	Version: 1.0.2
+	Version: 1.0.3
 	Author: jbenders
 	Author URI: http://ink361.com/
 */
@@ -18,6 +18,23 @@ function wp_instagram_stats_admin_register_head() {
 
 add_action('admin_head', 'wp_instagram_stats_admin_register_head');
 add_action('widgets_init', 'load_wp_instagram_stats');
+add_action('admin_notices', 'wpinstagram_stats_show_instructions');
+
+function wpinstagram_stats_show_instructions() {
+	global $wpdb;
+	
+	$results = $wpdb->get_results($wpdb->prepare("SELECT * FROM igstats_widget"));
+	
+	if (sizeof($results) == 0) {	
+		$url = plugins_url('wpstats-admin.css', __FILE__); 
+		wp_enqueue_style('wpstats-admin.css', $url);
+		wp_enqueue_script("jquery");
+		wp_enqueue_script("lightbox", plugin_dir_url(__FILE__)."js/lightbox.js", Array('jquery'), null);
+		
+		require(plugin_dir_path(__FILE__) . 'templates/setupInstructions.php');		
+	}
+}
+
 
 function load_wp_instagram_stats() {
 	register_widget('WPInstagramStatsWidget');
