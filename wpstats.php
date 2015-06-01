@@ -35,7 +35,6 @@ function wpinstagram_stats_show_instructions() {
 	}
 }
 
-
 function load_wp_instagram_stats() {
 	register_widget('WPInstagramStatsWidget');
 }
