@@ -3,7 +3,7 @@ Contributors: jbenders
 Tags: widgets, instagram, statistics
 Requires at least: 3.0
 Tested up to: 4.2
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 
 Show off your Instagram statistics on your website. Powered by INK361, the worlds leading Instagram viewing and statistics platform.
 
@@ -56,6 +56,11 @@ For more installation options please refer to:
 http://wordpress.ink361.com/help/stats/installing
 
 == Changelog ==
+
+= 1.0.4 =
+* Fixed warning on line 26 of the plugin.
+* Added review bar.
+* Removed joe editor backup files from repo.
 
 = 1.0.3 =
 * Added configuration guide notifications to make installation easier.

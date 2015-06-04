@@ -3,7 +3,7 @@
 	Plugin Name: Instagram Statistics
 	Plugin URI: http://wordpress.ord/extend/plugins/instagram-statistics
 	Description: Comprehensive Instagram statistics widget with tonnes of options
-	Version: 1.0.3
+	Version: 1.0.4
 	Author: jbenders
 	Author URI: http://ink361.com/
 */
@@ -23,7 +23,7 @@ add_action('admin_notices', 'wpinstagram_stats_show_instructions');
 function wpinstagram_stats_show_instructions() {
 	global $wpdb;
 	
-	$results = $wpdb->get_results($wpdb->prepare("SELECT * FROM igstats_widget"));
+	$results = $wpdb->get_results("SELECT * FROM igstats_widget");
 	
 	if (sizeof($results) == 0) {	
 		$url = plugins_url('wpstats-admin.css', __FILE__); 
@@ -32,6 +32,35 @@ function wpinstagram_stats_show_instructions() {
 		wp_enqueue_script("lightbox", plugin_dir_url(__FILE__)."js/lightbox.js", Array('jquery'), null);
 		
 		require(plugin_dir_path(__FILE__) . 'templates/setupInstructions.php');		
+	} else {
+		$settings = $wpdb->get_results("SELECT * FROM igstats_global_settings WHERE name='firstRun' and value <= DATE_SUB(now(), INTERVAL 7 DAY)");
+		
+		if (sizeof($settings) == 0) {
+			#has it been set yet?
+			$check = $wpdb->get_results("SELECT * FROM igstats_global_settings WHERE name='firstRun'");
+			if (sizeof($check) == 0) {				
+				#create it
+				$wpdb->get_results("INSERT INTO igstats_global_settings (name, value) VALUES ('firstRun', NOW())");
+			}
+		} else {
+			#have we been disabled?
+			$disabled = $wpdb->get_results("SELECT * FROM igstats_global_settings WHERE name='disabledMessage'");
+			
+			if (sizeof($disabled) == 0) {	
+				#have we received a request to remove the message?								
+				if (isset($_POST['instagram_stats_disable_message']) || isset($_GET['instagram_stats_disable_message'])) {
+					$wpdb->get_results("INSERT INTO igstats_global_settings (name, value) VALUES ('disabledMessage', '1')");
+				} else {						
+					#need to show header
+					$url = plugins_url('wpstats-admin.css', __FILE__); 
+					wp_enqueue_style('wpstats-admin.css', $url);
+					wp_enqueue_script("jquery");
+					wp_enqueue_script("lightbox", plugin_dir_url(__FILE__)."js/lightbox.js", Array('jquery'), null);
+					
+					require(plugin_dir_path(__FILE__) . 'templates/reviewInstructions.php');					
+				}				
+			}	
+		}		
 	}
 }
 
@@ -341,6 +370,22 @@ class WPInstagramStatsWidget extends WP_Widget {
 					'type'	=> 'varchar(1)',
 					'null'	=> true,
 				),							
+			),
+			$this->_tablePrefix() . 'global_settings' => array(
+				'uid'	=> array(
+					'type' 	=> 'int(11)',
+					'null' 	=> false,
+					'pk' 	=> true,
+					'auto'	=> true,
+				),
+				'name'	=> array(
+					'type'	=> 'varchar(255)',
+					'null'	=> true,
+				),
+				'value'	=> array(
+					'type'	=> 'text',
+					'null'	=> true,	
+				),
 			),
 		);
 	}
