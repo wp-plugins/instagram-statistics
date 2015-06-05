@@ -3,7 +3,7 @@
 	Plugin Name: Instagram Statistics
 	Plugin URI: http://wordpress.ord/extend/plugins/instagram-statistics
 	Description: Comprehensive Instagram statistics widget with tonnes of options
-	Version: 1.0.4
+	Version: 1.0.5
 	Author: jbenders
 	Author URI: http://ink361.com/
 */
@@ -115,9 +115,10 @@ class WPInstagramStatsWidget extends WP_Widget {
 					wp_enqueue_script('amcharts', $this->wpstats_path . 'js/amcharts.js', Array(), null);
 					wp_enqueue_script('amcharts-serial', $this->wpstats_path . 'js/serial.js', Array('amcharts'), null);
 					wp_enqueue_script('amcharts-pie', $this->wpstats_path . 'js/pie.js', Array('amcharts'), null);					
-					wp_enqueue_script('wpstats', $this->wpstats_path . 'js/wpstats.js', Array('odometer', 'amcharts', 'amcharts-serial', 'amcharts-pie'), null);
-															
-					$stats = json_decode(stripslashes($stats->statistics));
+					wp_enqueue_script('wpstats', $this->wpstats_path . 'js/wpstats.js', Array('odometer', 'amcharts', 'amcharts-serial', 'amcharts-pie'), null);									
+										
+					$tmp = stripslashes($stats->statistics);																																								
+					$stats = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $tmp));
 					
 					require(plugin_dir_path(__FILE__) . "templates/widgetHeader.php");
 					
@@ -291,7 +292,7 @@ class WPInstagramStatsWidget extends WP_Widget {
 					'null'	=> true,	
 				),
 				'statistics'	=> array(
-					'type'	=> 'text',
+					'type'	=> 'mediumtext',
 					'null'	=> true,
 				),
 			),
@@ -404,6 +405,7 @@ class WPInstagramStatsWidget extends WP_Widget {
 
 				#type
 				$fields['type'] = strtolower($column->Type);
+								
 				#null				
 				if (strtolower($column->Null) === 'no') {
 					$fields['null'] = false;
@@ -507,6 +509,34 @@ class WPInstagramStatsWidget extends WP_Widget {
 						}
 						
 						$result = $wpdb->get_results($query);
+					} else {																		
+						if ($description[$columnName]['type'] !== $columnDetails['type']) {
+							$query = "ALTER TABLE $name CHANGE COLUMN ";
+							
+							$query .= " $columnName $columnName ";
+						
+							if ($columnDetails['type']) {
+								$query .= $columnDetails['type'] . ' ';
+							} else {
+								$query .= ' varchar(255) ';
+							}
+						
+							if ($columnDetails['null']) {
+								$query .= ' NULL ';
+							} else {
+								$query .= ' NOT NULL ';
+							}
+						
+							if ($columnDetails['auto']) {
+								$query .= ' auto_increment ';
+							}
+							
+							if ($columnDetails['pk']) {
+								$query .= ' primary key ';
+							}
+							
+							$result = $wpdb->get_results($query);	
+						}
 					}
 				}
 			}

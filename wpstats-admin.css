@@ -539,3 +539,24 @@ li.tabber.error a {
 	text-decoration: none;
 	color: #FFF;
 }
+
+.wpstats_widget_loader {
+	background: url('img/ajax-loader.gif') no-repeat center center;
+	width: 16px;
+	height: 16px;
+	position: absolute;
+	right: 5px;
+	top: 30px;
+	display: none;
+}
+
+.wploading .wpstats_widget_loader {
+	display: block;
+}
+
+.wpstats_big_loader {
+	background: url('img/big-loader.gif') no-repeat center center;
+	height: 55px;
+	margin-top: 140px;
+	margin-bottom: 40px;
+}

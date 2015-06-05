@@ -160,6 +160,7 @@
 						              </label>
 						              <input type="hidden" name="user" id="otherUserId" placeholder="Start typing a username to search" value="<?php print $details->user_id ?>">
 						              <input class="widefat" type="text" name="username" id="otherUser" placeholder="Start typing a username to search" value="<?php print htmlspecialchars($details->username) ?>">
+									  <div class="wpstats_widget_loader"></div>
 						        </p>
 					            <div id="otherUserResults"></div>
 					    	</div>
@@ -428,10 +429,13 @@
 						
 			function generateStats<?php print $instance['db_id'] ?>() {
 				lightbox({
-					content: '<div style="padding: 20px; text-align: center; font-weight: bold;">Generating statistics...</div>',
+					content: '<div style="padding: 20px; text-align: center; font-weight: bold;"><div class="wpstats_big_loader"></div>Generating statistics, please do not close this window.</div>',
 					frameCls : '',
 					closeCallback: stopGenerating<?php print $instance['db_id'] ?>,					
 				});
+				
+				return;
+				
 				window.shouldGenerate<?php print $instance['db_id'] ?>= true;
 				window.generated<?php print $instance['db_id'] ?>Profile = false;
 				window.generated<?php print $instance['db_id'] ?>Media = false;
@@ -515,6 +519,11 @@
 						if (response.data && response.data.length > 0) {
 							for (var i = 0; i < response.data.length; i++) {
 								var photo = response.data[i];
+								
+								photo.comments.data = [];
+								photo.users_in_photo = [];
+								photo.likes.data = [];
+								photo.caption = {};
 																
 								if (window.processed<?php print $instance['db_id'] ?>.indexOf(photo.id) > 0) {
 									continue;
@@ -596,7 +605,7 @@
 								
 								if (photo.location && photo.location.latitude) {
 									statt['locations']['total'] += 1;
-								}									
+								}																									
 								
 								if (photo.tags && photo.tags.length > 0) {
 									window.stats<?php print $instance['db_id'] ?>['tags']['tagged'] += 1;
@@ -727,7 +736,7 @@
 				window.shouldGenerate<?php print $instance['db_id'] ?> = false;				
 			}
 		
-		    function openStatsSetup<?php print $instance['db_id'] ?>() {      
+		    function openStatsSetup<?php print $instance['db_id'] ?>() {     			  				 
 		      lightbox({
 		        content : window.setupStats<?php print $instance['db_id'] ?>,
 		        frameCls : '',
@@ -737,21 +746,22 @@
 		          }
 		        }      
 		      });
-		      configureStatsForm();
+		      configureStatsForm<?php print $instance['db_id'] ?>();
 		    
 		      jQuery('.instagram-stats-widget-admin-form input, .instagram-stats-widget-admin-form select').change(function() {
-		        configureStatsForm();
+		        configureStatsForm<?php print $instance['db_id'] ?>();
 		      });
 		
 		      //our dropdown search
-		      jQuery('#otherUser').keyup(function(event) {
-		        setTimeout(function() {
+		      jQuery('#formStats<?php print $instance['db_id'] ?> #otherUser').keyup(function(event) {			  	
+		        clearTimeout(window.searchTimeout);
+				window.searchTimeout = setTimeout(function() {
 		          searchUserHandler<?php print $instance['db_id'] ?>();
 		        }, 200);
 		      });
-		      jQuery('#otherUser').blur(function(event) {
+		      jQuery('#formStats<?php print $instance['db_id'] ?> #otherUser').blur(function(event) {
 		        setTimeout(function() {
-		          jQuery('#otherUserResults').removeClass('visible');
+		          jQuery('#formStats<?php print $instance['db_id'] ?> #otherUserResults').removeClass('visible');
 		        }, 250);
 		      });
 		    }
@@ -854,15 +864,17 @@
 		        }
 		      }
 		    
-		      if (!window.configureStatsForm) {
-		        window.configureStatsForm = function() {
+		      if (!window.configureStatsForm<?php print $instance['db_id'] ?>) {
+		        window.configureStatsForm<?php print $instance['db_id'] ?> = function() {
 		        
 		        }
 		      }
 		  
 		      window.setupStats<?php print $instance['db_id'] ?> = jQuery('#statsSetupForm<?php print $instance['db_id'] ?>').html();
 		      
-		      jQuery('#statsSetupForm<?php print $instance['db_id'] ?>').html('');
+			  setTimeout(function() {
+				jQuery('#statsSetupForm<?php print $instance['db_id'] ?>').html('');					  		      
+			  }, 50);
 		  
 		      var token = '<?php print $instance['db_id'] ?>';
 		      if (location.href.replace('statswidget=' + token, '') != location.href) {
@@ -909,9 +921,12 @@
 		    
 		      if (!window.searchUserHandler<?php print $instance['db_id'] ?>) {				
 		        window.searchUserHandler<?php print $instance['db_id'] ?> = function() {
-		          var keywords = jQuery('#otherUser').val();
-		                 
+		          var keywords = jQuery('#formStats<?php print $instance['db_id'] ?> #otherUser').val();
+		          				  
 		          if (keywords.length > 2) {
+					//show the loader
+            		jQuery('#formStats<?php print $instance['db_id'] ?> #anotherUser').addClass('wploading');
+					  
 		            jQuery.ajax({
 		              url	: 'https://api.instagram.com/v1/users/search',
 		              jsonp 	: "callback",
@@ -922,35 +937,37 @@
 		              },
 		              success	: function(response) {
 		                //reset the id
-		                jQuery('#otherUserId').val('');
+		                jQuery('#formStats<?php print $instance['db_id'] ?> #otherUserId').val('');
 		                                   
 		                if (response && response.data && response.data.length > 0) {
 		                  var html = '';
 		                  for (var i = 0; i < response.data.length; i++) {
 		                    html += '<div class="result" data-id="' + response.data[i].id + '" data-name="' + response.data[i].username + '">' + response.data[i].username + '</div>';
 		                  }
-		                  jQuery('#otherUserResults').html(html);
+		                  jQuery('#formStats<?php print $instance['db_id'] ?> #otherUserResults').html(html);
 		                       
-		                  jQuery('#otherUserResults').find('.result').click(function() {
-		                    jQuery('#otherUser').val(jQuery(this).attr('data-name'));
-		                    jQuery('#otherUserId').val(jQuery(this).attr('data-id'));
+		                  jQuery('#formStats<?php print $instance['db_id'] ?> #otherUserResults').find('.result').click(function() {
+		                    jQuery('#formStats<?php print $instance['db_id'] ?> #otherUser').val(jQuery(this).attr('data-name'));
+		                    jQuery('#formStats<?php print $instance['db_id'] ?> #otherUserId').val(jQuery(this).attr('data-id'));
 		                  }); 
 		                  
-		                  jQuery('#otherUserResults').addClass('visible');
+		                  jQuery('#formStats<?php print $instance['db_id'] ?> #otherUserResults').addClass('visible');
 		                } else {
 		                  //show no users
-		                  noUsersFound();
-		                }              
+		                  noUsersFound<?php print $instance['db_id'] ?>();
+		                }       
+						
+						jQuery('#formStats<?php print $instance['db_id'] ?> #anotherUser').removeClass('wploading');       
 		              }
 		            });
 		          }    
 		        }
 		      }
 		    
-		      if (!window.noUsersFound) {
+		      if (!window.noUsersFound<?php print $instance['db_id'] ?>) {
 		        window.noUsersFound = function() {
-		          jQuery('#otherUserResults').html('<div class="noResults">Nobody found</div>');
-		          jQuery('#otherUserResults').addClass('visible');                         
+		          jQuery('#formStats<?php print $instance['db_id'] ?> #otherUserResults').html('<div class="noResults">Nobody found</div>');
+		          jQuery('#formStats<?php print $instance['db_id'] ?> #otherUserResults').addClass('visible');                         
 		        }
 		      }  
 			  
