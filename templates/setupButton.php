@@ -432,9 +432,7 @@
 					content: '<div style="padding: 20px; text-align: center; font-weight: bold;"><div class="wpstats_big_loader"></div>Generating statistics, please do not close this window.</div>',
 					frameCls : '',
 					closeCallback: stopGenerating<?php print $instance['db_id'] ?>,					
-				});
-				
-				return;
+				});								
 				
 				window.shouldGenerate<?php print $instance['db_id'] ?>= true;
 				window.generated<?php print $instance['db_id'] ?>Profile = false;
