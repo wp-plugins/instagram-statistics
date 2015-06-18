@@ -3,7 +3,7 @@
 	Plugin Name: Instagram Statistics
 	Plugin URI: http://wordpress.ord/extend/plugins/instagram-statistics
 	Description: Comprehensive Instagram statistics widget with tonnes of options
-	Version: 1.0.5
+	Version: 1.0.6
 	Author: jbenders
 	Author URI: http://ink361.com/
 */
